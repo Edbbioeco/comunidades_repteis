@@ -1,2 +1,2 @@
-# comunidades_repteis
-Códigos usados no artigo sobre comunidades de répteis
+# Comunidades de repteis
+> Códigos usados no artigo sobre comunidades de répteis
