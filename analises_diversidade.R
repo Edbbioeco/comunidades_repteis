@@ -150,17 +150,12 @@ ggsave(filename = "curva.png", height = 10, width = 12)
 
 ## Calculando as matrizes de distância ----
 
-matriz <- matriz_2 |> 
-  dplyr::select(dplyr::where(is.numeric)) |> 
-  as.data.frame()
-
-matriz
-
-rownames(matriz) <- matriz_2$Município
-
-jacc <- matriz |> 
+jacc <- matriz_2 |> 
+  tibble::column_to_rownames(var = "Município") |> 
   dplyr::select(dplyr::where(is.numeric)) |> 
   betapart::beta.pair(index.family = "jaccard")
+
+jacc
 
 ## Calculando os clusters ----
 
@@ -234,9 +229,12 @@ ggplot() +
   facet_wrap(~ dendro_id) +
   scale_fill_manual(values = c("royalblue", "orange")) +
   scale_y_continuous(limits = c(-0.25, 1), breaks = seq(0, 1, 0.1)) +
+  theme_minimal() +
   theme(axis.text.x = element_blank(),
+        axis.text.y = element_text(color = "black", size = 15),
         axis.title.x = element_blank(),
         axis.ticks.x = element_blank(),
+        panel.grid = element_line(color = "gray50", linewidth = 0.5),
         panel.grid.major.x = element_blank(),
         panel.grid.minor.x = element_blank())
 
@@ -256,11 +254,18 @@ calcular_permanova <- function(x, y){
   
   print(permanova)
   
+  assign(paste0("permanova_", x),
+         permanova,
+         envir = globalenv())
+  
 }
 
 purrr::walk2(c("Turnover", "Nestedness", "Total Jaccard"),
              1:3, 
              calcular_permanova)
+
+ls(pattern = "permanova_") |> 
+  mget(envir = globalenv())
 
 ## NMDS ----
 
